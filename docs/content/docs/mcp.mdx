@@ -3,7 +3,7 @@ title: MCP Tools
 description: Compression, retrieval, and stats as MCP tools for Claude Code, Cursor, and any MCP-compatible host.
 ---
 
-Headroom's MCP server exposes compression, retrieval, and observability as tools that any MCP-compatible AI coding tool can call -- Claude Code, Cursor, Codex, and more. No proxy required.
+Headroom's MCP server exposes compression, retrieval, and observability as tools that any MCP-compatible AI coding tool can call -- Claude Code, Cursor, Codex, Pi Code Agent, and more. No proxy required.
 
 ## Installation
 
@@ -176,6 +176,7 @@ Install Headroom so it's globally on PATH — `uv tool install "headroom-ai[mcp]
 | Claude Code | Native | `headroom mcp install` |
 | Cursor | Supported | Add to Cursor MCP settings |
 | Codex | If supported | Configure MCP server |
+| Pi Code Agent | Supported via pi-mcp-adapter | Add `headroom mcp serve` to `.pi/mcp.json` |
 | Any MCP host | Yes | Point to `headroom mcp serve` |
 
 ## Architecture

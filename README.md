@@ -47,7 +47,7 @@ Headroom compresses everything your AI agent reads — tool outputs, logs, RAG c
 
 - **Library** — `compress(messages)` in Python or TypeScript, inline in any app
 - **Proxy** — `headroom proxy --port 8787`, zero code changes, any language
-- **Agent wrap** — `headroom wrap claude|codex|copilot|cursor|aider|opencode|cline|continue|goose|openhands|openclaw|vibe` in one command; undo with `headroom unwrap <tool>`
+- **Agent wrap** — `headroom wrap claude|codex|copilot|cursor|aider|opencode|cline|continue|goose|openhands|openclaw|vibe` in one command; Pi uses MCP/proxy config; undo durable wrapping with `headroom unwrap <tool>`
 - **MCP server** — `headroom_compress`, `headroom_retrieve`, `headroom_stats` for any MCP client
 - **Cross-agent memory** — shared store across Claude, Codex, Gemini, auto-dedup
 - **`headroom learn`** — mines failed sessions, writes corrections to `CLAUDE.local.md` (default, gitignored) or `CLAUDE.md` / `AGENTS.md` / `GEMINI.md`
@@ -197,6 +197,7 @@ shows an **Output Tokens Saved** card next to input compression, labelled
 | Claude Code  | ✅              | `--memory` · `--code-graph` · `--1m` · `--tool-search` |
 | Codex        | ✅              | shares memory with Claude        |
 | Cursor       | Manual setup    | starts proxy and prints base URLs for Cursor settings |
+| Pi Code Agent | MCP/proxy config | use `.pi/mcp.json` for tools; `models.json` provider override for proxy |
 | Aider        | ✅              | starts proxy + launches          |
 | Copilot CLI  | ✅              | starts proxy + launches          |
 | OpenClaw     | ✅              | installs as ContextEngine plugin |
@@ -208,7 +209,7 @@ shows an **Output Tokens Saved** card next to input compression, labelled
 | Mistral Vibe | ✅              | starts proxy + launches          |
 | Cortex Code  | Library only    | 60–65% savings (library mode; no `wrap`) |
 
-Any OpenAI-compatible client works via `headroom proxy`. MCP-native: `headroom mcp install`.
+Any OpenAI-compatible client works via `headroom proxy`. MCP-native: `headroom mcp install`. For Pi Code Agent, this repo includes `.pi/prompts/use-headroom.md` and `.pi/skills/headroom/SKILL.md`; configure `.pi/mcp.json` with `headroom mcp serve` for tools, and route Pi providers through `http://127.0.0.1:8787` (Anthropic) or `http://127.0.0.1:8787/v1` (OpenAI) for automatic compression.
 Undo durable wrapping with `headroom unwrap <tool>` (supports: `claude`, `copilot`, `codex`, `opencode`, `openclaw`).
 
 ### GitHub Copilot CLI subscription mode

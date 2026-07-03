@@ -21,14 +21,14 @@ The canonical, always-current documentation index lives at the docs site below. 
 - TypeScript / Node: `npm install headroom-ai` (or `pnpm add headroom-ai`, `bun add headroom-ai`)
 - Docker: `docker run -p 8787:8787 ghcr.io/chopratejas/headroom:latest`
 - Run the proxy: `headroom proxy --port 8787` then point any client at `http://127.0.0.1:8787`
-- Wrap an agent in one command: `headroom wrap claude` (also: `codex`, `copilot`, `cursor`, `aider`, `opencode`, `cline`, `continue`, `goose`, `openhands`, `openclaw`, `vibe`)
+- Wrap an agent in one command: `headroom wrap claude` (also: `codex`, `copilot`, `cursor`, `aider`, `opencode`, `cline`, `continue`, `goose`, `openhands`, `openclaw`, `vibe`); Pi Code Agent uses `.pi/mcp.json` + `headroom proxy` provider overrides.
 
 ## Entry points
 
 - [Quickstart](https://headroom-docs.vercel.app/docs/quickstart): 5-minute end-to-end (install → compress → call the model).
 - [Installation](https://headroom-docs.vercel.app/docs/installation): All install paths, extras, Docker tags, env vars.
 - [Proxy server](https://headroom-docs.vercel.app/docs/proxy): Run as a local HTTP proxy in front of OpenAI / Anthropic / Gemini.
-- [MCP server](https://headroom-docs.vercel.app/docs/mcp): `headroom_compress`, `headroom_retrieve`, `headroom_stats` for Claude Code / Cursor / any MCP host.
+- [MCP server](https://headroom-docs.vercel.app/docs/mcp): `headroom_compress`, `headroom_retrieve`, `headroom_stats` for Claude Code / Cursor / Pi Code Agent / any MCP host.
 - [API reference](https://headroom-docs.vercel.app/docs/api-reference): Python + TypeScript `compress()` API.
 
 ## How it works
