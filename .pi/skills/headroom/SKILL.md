@@ -1,7 +1,7 @@
 ---
 name: headroom
 version: 1.0.0
-description: Configure and use Headroom with Pi Code Agent: local proxy routing, MCP compression tools, retrieval, and stats.
+description: "Configure and use Headroom with Pi Code Agent: local proxy routing, MCP compression tools, retrieval, and stats."
 ---
 
 # Headroom for Pi Code Agent
