@@ -14,6 +14,7 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { Leaf } from './pageFlip.js';
+import { Letter } from './letter.js';
 import { paginate } from './layout.js';
 import {
   composePage,
@@ -101,6 +102,10 @@ export class Album {
     this.counterEl = document.getElementById('page-counter');
     this.errorEl = document.getElementById('photo-error');
     document.getElementById('photo-retry').addEventListener('click', () => this.#retryPhotos());
+
+    // La lettera sulla copertina: va aperta prima di poter sfogliare
+    this.letter = new Letter();
+    this.letter.onCloseRequest = () => this.#closeLetter();
 
     this.#bindInput();
   }
@@ -222,6 +227,7 @@ export class Album {
     frontPivot.position.z = hinge;
     frontCover.position.set(cw / 2 - 0.012, 0, (L + 1) * EPS + COVER_T / 2 - hinge);
     frontPivot.add(frontCover);
+    this.letter.attachTo(frontCover, COVER_T);
     this.book.add(frontPivot);
 
     // --- retro
@@ -439,13 +445,14 @@ export class Album {
   activate(from) {
     this.active = true;
     this.tween?.kill();
-    this.p = from === 'end' ? this.views.length - 1 : 0;
+    // se la lettera non è ancora stata letta si parte sempre dalla copertina
+    this.p = from === 'end' && !this.letter.pending ? this.views.length - 1 : 0;
     this.targetP = this.p;
     this.#applyP(true);
     this.hit.classList.add('is-active');
     this.ui.classList.add('is-visible');
     this.#refreshUI(true);
-    if (this.photos.error) this.errorEl.hidden = false;
+    if (this.photos.error && !this.letter.pending) this.errorEl.hidden = false;
   }
 
   deactivate() {
@@ -463,6 +470,7 @@ export class Album {
     this.p = 0;
     this.targetP = 0;
     this.flipped = false;
+    this.letter.reset();
     this.#applyP(true);
   }
 
@@ -568,6 +576,7 @@ export class Album {
   /** Avanti/indietro di una vista (o uscita dall'album ai bordi). */
   step(dir) {
     if (!this.active) return;
+    if (this.letter.pending) return this.letter.nudge(); // prima la lettera
     const V = this.views.length;
     const base = this.tween?.isActive() ? this.targetP : Math.round(this.p);
     const target = base + dir;
@@ -604,6 +613,18 @@ export class Album {
   #exit(direction) {
     if (!this.active) return;
     this.onExit?.(direction);
+  }
+
+  #openLetter() {
+    this.letter.open();
+    this.hintEl.textContent = '';
+  }
+
+  #closeLetter() {
+    this.letter.close(() => {
+      this.#refreshUI(true);
+      if (this.photos.error && this.active) this.errorEl.hidden = false;
+    });
   }
 
   #markFlipped() {
@@ -643,7 +664,7 @@ export class Album {
       const dx = e.clientX - d.x0;
       const dy = e.clientY - d.y0;
       if (!d.axis && Math.hypot(dx, dy) > 8) d.axis = Math.abs(dx) >= Math.abs(dy) ? 'x' : 'y';
-      if (!d.axis) return;
+      if (!d.axis || this.letter.pending) return;
       const delta = d.axis === 'x' ? -dx / (this.fit.pagePx * 1.1) : -dy / (window.innerHeight * 0.5);
       const V = this.views.length;
       this.p = clamp(d.p0 + delta, -0.35, V - 1 + 0.35);
@@ -659,6 +680,14 @@ export class Album {
       hit.classList.remove('is-dragging');
       const V = this.views.length;
 
+      if (this.letter.pending) {
+        // finché la lettera non è aperta si può solo toccarla
+        const ndcX = (e.clientX / window.innerWidth) * 2 - 1;
+        const ndcY = -(e.clientY / window.innerHeight) * 2 + 1;
+        if (!d.axis && this.letter.hitTest(ndcX, ndcY, this.camera)) this.#openLetter();
+        else this.letter.nudge();
+        return;
+      }
       if (!d.axis) {
         // tocco: metà destra avanti, metà sinistra indietro
         this.p = d.p0;
@@ -722,6 +751,18 @@ export class Album {
     // Tastiera
     window.addEventListener('keydown', (e) => {
       if (!this.active) return;
+      if (this.letter.pending) {
+        // lettera aperta: i tasti servono a lei (pulsante "Apri l'album")
+        if (this.letter.state !== 'closed') return;
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.#openLetter();
+        } else if (e.key.startsWith('Arrow') || e.key.startsWith('Page')) {
+          e.preventDefault();
+          this.letter.nudge();
+        }
+        return;
+      }
       const next = ['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'];
       const prev = ['ArrowLeft', 'ArrowUp', 'PageUp'];
       if (next.includes(e.key)) {
@@ -774,6 +815,11 @@ export class Album {
     this.counterEl.textContent = text;
 
     let hint = '';
+    if (this.letter.pending) {
+      this.counterEl.textContent = '';
+      this.hintEl.textContent = this.letter.state === 'closed' ? 'prima tocca la lettera 💌' : '';
+      return;
+    }
     if (this.photos.error) hint = '';
     else if (k === 0) hint = isMobile ? 'scorri ← per aprire l’album' : 'trascina, usa la rotellina o le frecce ← →';
     else if (k >= V - 2) hint = isMobile ? 'ancora uno swipe per continuare' : 'ancora una volta per continuare ↓';
@@ -793,6 +839,7 @@ export class Album {
     this.dim.visible = m > 0.002;
     this.dim.material.uniforms.uOpacity.value = smooth(clamp(m * 1.15, 0, 1)) * 0.86;
     for (const l of this.lights) l.visible = visible;
+    this.letter.update(time);
     if (!visible) return;
 
     // dal punto di Milano al centro dello schermo

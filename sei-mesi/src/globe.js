@@ -58,7 +58,10 @@ const EARTH_FRAGMENT = /* glsl */ `
     vec3 r2 = cross(n, sx);
     float det = dot(sx, r1);
     vec3 grad = sign(det) * (dFdx(h) * r1 + dFdy(h) * r2);
-    return normalize(abs(det) * n - grad);
+    vec3 r = abs(det) * n - grad;
+    float len = length(r);
+    // ai bordi del globo le derivate possono annullarsi: niente normali "impossibili"
+    return len > 1e-8 ? r / len : n;
   }
 
   void main() {

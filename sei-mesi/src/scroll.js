@@ -47,15 +47,23 @@ export class ScrollDirector {
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
 
+    // Su telefono lo scroll touch lo gestisce Lenis (syncTouch) e non iOS:
+    // l'inerzia nativa di Safari ignora i comandi di scroll e faceva
+    // "scavalcare" il punto in cui l'album deve fermarsi.
     this.lenis = new Lenis({
       lerp: reducedMotion ? 1 : 0.085,
       smoothWheel: !reducedMotion,
-      syncTouch: false,
+      syncTouch: isMobile,
+      syncTouchLerp: reducedMotion ? 1 : 0.075,
+      touchInertiaExponent: 1.6,
       wheelMultiplier: 0.9,
     });
     this.lenis.on('scroll', ScrollTrigger.update);
     this.lenis.on('scroll', (e) => this.#onScroll(e.scroll));
-    gsap.ticker.add((t) => this.lenis.raf(t * 1000));
+    gsap.ticker.add((t) => {
+      this.lenis.raf(t * 1000);
+      this.#holdLock();
+    });
     gsap.ticker.lagSmoothing(0);
 
     this.#build();
@@ -110,14 +118,15 @@ export class ScrollDirector {
     let t = 7.45;
     phrases.forEach((el, i) => {
       const last = i === phrases.length - 1;
+      // niente filter: blur(): su iPhone sopra il canvas 3D può lampeggiare un rettangolo nero
       tl.fromTo(
         el,
-        { autoAlpha: 0, y: 26, filter: 'blur(10px)' },
-        { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out' },
+        { autoAlpha: 0, y: 26, scale: 0.97 },
+        { autoAlpha: 1, y: 0, scale: 1, duration: 0.6, ease: 'power2.out' },
         t,
       );
       if (!last) {
-        tl.to(el, { autoAlpha: 0, y: -18, filter: 'blur(8px)', duration: 0.4, ease: 'power2.in' }, t + 1.3);
+        tl.to(el, { autoAlpha: 0, y: -18, scale: 0.98, duration: 0.4, ease: 'power2.in' }, t + 1.3);
         t += 1.8;
       }
     });
@@ -166,6 +175,16 @@ export class ScrollDirector {
     if (crossedDown || crossedUp) this.#lock(crossedDown ? 'down' : 'up');
   }
 
+  /** Finché l'album è aperto, la pagina resta esattamente sul punto di blocco. */
+  #holdLock() {
+    if (!this.locked) return;
+    const lockY = this.lockY;
+    const y = window.scrollY;
+    if (Math.abs(y - lockY) > 2 || Math.abs(this.lenis.scroll - lockY) > 2) {
+      this.lenis.scrollTo(lockY, { immediate: true, force: true });
+    }
+  }
+
   #lock(direction) {
     this.locked = true;
     this.lenis.scrollTo(this.lockY, { immediate: true, force: true });
@@ -198,11 +217,16 @@ export class ScrollDirector {
   /** Torna all'inizio istantaneamente (usato da "Ricomincia", dietro una dissolvenza). */
   jumpToStart() {
     this.locked = false;
-    this.armed = true;
     this.programmatic = false;
+    // Il salto dalla fine all'inizio "attraversa" il punto dell'album: senza
+    // queste due righe veniva scambiato per uno scroll all'indietro e la
+    // pagina si bloccava sull'album chiuso dal retro.
+    this.armed = false;
+    this.prevScroll = 0;
     this.lenis.start();
     this.lenis.scrollTo(0, { immediate: true, force: true });
     this.prevScroll = 0;
+    this.armed = true;
     ScrollTrigger.update();
     this.st.getTween()?.progress(1);
     this.tl.progress(0);

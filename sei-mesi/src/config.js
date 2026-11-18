@@ -11,6 +11,21 @@ export const SUN_DIRECTION = [-0.9, 0.3, 0.2];
 /** Titolo sulla copertina dell'album (due righe). */
 export const COVER_TITLE = ['I 6 mesi di', 'Giulia e Davide'];
 
+/**
+ * La lettera sulla copertina: si apre prima di poter sfogliare l'album.
+ * Per cambiare il testo basta modificare qui.
+ */
+export const LETTER = {
+  envelope: 'Per Giulia',
+  greeting: 'Cara Giulia,',
+  paragraphs: [
+    'sono stati 6 mesi bellissimi. Ogni giorno, nonostante le difficoltà, mi convinco sempre di più che tu sei la mia persona.',
+    'Ti volevo fare questo spoiler del pensierino che ho fatto per noi: un album con le nostre fotografie stampate. Purtroppo non l’ho potuto portare perché non mi stava nello zainetto… però vabbè: quando tornerai a Milano decideremo insieme le foto da metterci, così lo teniamo come album dei ricordi di tutte le nostre cose.',
+  ],
+  closing: 'Ti amo,',
+  signature: 'Davide',
+};
+
 /** Palette condivisa tra 3D e DOM. */
 export const COLORS = {
   night: 0x04060f,

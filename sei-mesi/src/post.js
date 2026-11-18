@@ -14,8 +14,29 @@ import {
   ToneMappingEffect,
   ToneMappingMode,
   BlendFunction,
+  Effect,
 } from 'postprocessing';
 import { quality } from './quality.js';
+
+/**
+ * Ripulisce i pixel "impossibili" (NaN / infinito) prima del bloom.
+ * Su alcune GPU un singolo pixel non valido viene allargato dal bloom in un
+ * quadrato nero che lampeggia: qui lo si azzera prima che succeda.
+ */
+class SanitizeEffect extends Effect {
+  constructor() {
+    super(
+      'SanitizeEffect',
+      /* glsl */ `
+      void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
+        vec4 c = inputColor;
+        bool bad = any(notEqual(c, c)) || any(greaterThan(abs(c), vec4(60000.0)));
+        outputColor = bad ? vec4(0.0, 0.0, 0.0, 1.0) : min(c, vec4(64.0));
+      }
+    `,
+    );
+  }
+}
 
 export class Post {
   constructor(renderer, scene, camera) {
@@ -24,6 +45,7 @@ export class Post {
       multisampling: Math.min(quality.multisampling, renderer.capabilities.maxSamples || 0),
     });
     this.composer.addPass(new RenderPass(scene, camera));
+    this.composer.addPass(new EffectPass(camera, new SanitizeEffect()));
 
     this.bloom = new BloomEffect({
       mipmapBlur: true,

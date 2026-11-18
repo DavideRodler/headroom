@@ -142,11 +142,9 @@ html.is-loading, html.is-loading body { overflow: hidden; height: 100%; }
   padding: 1.6rem 1.4rem;
   text-align: center;
   border-radius: 18px;
-  background: rgba(10, 16, 48, 0.82);
+  background: rgba(10, 16, 48, 0.94);
   border: 1px solid rgba(243, 201, 139, 0.35);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 .photo-error[hidden] { display: none; }
 .photo-error p {
@@ -170,12 +168,10 @@ html.is-loading, html.is-loading body { overflow: hidden; height: 100%; }
   font-size: 1.05rem;
   letter-spacing: 0.08em;
   color: var(--cream);
-  background: linear-gradient(135deg, rgba(255, 111, 156, 0.28), rgba(243, 201, 139, 0.22));
+  background: linear-gradient(135deg, rgba(92, 22, 50, 0.92), rgba(70, 40, 40, 0.9));
   border: 1px solid rgba(243, 201, 139, 0.55);
   border-radius: 999px;
   cursor: pointer;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
   transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
 }
 .photo-error button:hover,
@@ -183,6 +179,107 @@ html.is-loading, html.is-loading body { overflow: hidden; height: 100%; }
 .enter:hover {
   transform: translateY(-1px);
   box-shadow: 0 0 24px rgba(255, 111, 156, 0.35);
+}
+
+/* ---- Lettera ------------------------------------------------------------ */
+.letter {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  display: grid;
+  place-items: center;
+  padding: calc(18px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px))
+    calc(18px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  background: radial-gradient(ellipse at 50% 45%, rgba(40, 12, 24, 0.55), rgba(4, 6, 15, 0.82));
+  opacity: 0;
+  visibility: hidden;
+}
+.letter[hidden] { display: none; }
+.letter-paper {
+  --ink: #4a1424;
+  --paper: #fbf4e8;
+  --rule: rgba(160, 120, 90, 0.16);
+  position: relative;
+  width: min(100%, 520px);
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 2.6rem clamp(1.3rem, 6vw, 2.4rem) 1.8rem;
+  color: var(--ink);
+  background:
+    repeating-linear-gradient(to bottom, transparent 0, transparent 1.95rem, var(--rule) 1.95rem, var(--rule) 2rem),
+    radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.6), transparent 60%),
+    var(--paper);
+  background-position: 0 0.55rem, 0 0, 0 0;
+  border-radius: 4px;
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.55),
+    0 2px 0 rgba(255, 255, 255, 0.4) inset;
+  transform: rotate(-0.6deg);
+}
+.letter-seal {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  margin-left: -22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #d94a6a, #a5223f 60%, #6e1028);
+  box-shadow: 0 4px 10px rgba(60, 5, 20, 0.45);
+}
+.letter-seal::after {
+  content: '♥';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font: 20px/1 Georgia, serif;
+  color: rgba(255, 190, 205, 0.75);
+}
+.letter-greeting {
+  margin: 0 0 0.6rem;
+  font-family: var(--script);
+  font-size: clamp(2rem, 9vw, 2.6rem);
+  line-height: 1.1;
+}
+.letter-body p {
+  margin: 0 0 0.9rem;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(1.12rem, 4.6vw, 1.28rem);
+  line-height: 2rem;
+}
+.letter-closing {
+  margin: 0.4rem 0 0;
+  font-family: var(--script);
+  font-size: clamp(1.9rem, 8vw, 2.3rem);
+  line-height: 1.2;
+}
+.letter-sign {
+  margin: 0 0 1.4rem;
+  font-family: var(--script);
+  font-size: clamp(1.6rem, 7vw, 2rem);
+  text-align: right;
+}
+.letter-close {
+  display: block;
+  margin: 0 auto;
+  padding: 0.75rem 1.7rem;
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  color: #fff4e6;
+  background: linear-gradient(135deg, #a5223f, #6e1028);
+  border: 0;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(110, 16, 40, 0.35);
+  cursor: pointer;
+}
+.letter-close:focus-visible {
+  outline: 2px solid #f3c98b;
+  outline-offset: 3px;
 }
 
 /* ---- Frasi finali ------------------------------------------------------- */
@@ -246,10 +343,8 @@ html.is-loading, html.is-loading body { overflow: hidden; height: 100%; }
   font-size: 1.15rem;
   line-height: 1;
   color: var(--cream);
-  background: rgba(10, 16, 48, 0.55);
+  background: rgba(10, 16, 48, 0.85);
   border: 1px solid rgba(243, 201, 139, 0.4);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
   cursor: pointer;
 }
 .music[hidden] { display: none; }

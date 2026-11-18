@@ -30,6 +30,18 @@
       <div id="page-counter" class="page-counter"></div>
     </div>
 
+    <!-- La lettera sulla copertina (testo in src/config.js) -->
+    <div id="letter" class="letter" role="dialog" aria-modal="true" aria-labelledby="letter-greeting" data-lenis-prevent hidden>
+      <article class="letter-paper">
+        <div class="letter-seal" aria-hidden="true"></div>
+        <p class="letter-greeting" id="letter-greeting"></p>
+        <div class="letter-body"></div>
+        <p class="letter-closing"></p>
+        <p class="letter-sign"></p>
+        <button type="button" id="letter-close" class="letter-close">Apri l’album</button>
+      </article>
+    </div>
+
     <!-- Messaggio gentile se le foto non arrivano -->
     <div id="photo-error" class="photo-error" role="alert" hidden>
       <p>Le foto si stanno facendo desiderare…</p>
