@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#04060f" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>I 6 mesi di Giulia e Davide</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 28s-11-7-11-15a6 6 0 0 1 11-3.3A6 6 0 0 1 27 13c0 8-11 15-11 15z' fill='%23ff6f9c'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <!-- Canvas Three.js (fisso dietro a tutto) -->
+    <div id="stage" aria-hidden="true"></div>
+
+    <!-- Spazio scorrevole: la sua altezza guida la timeline (ScrollTrigger) -->
+    <main id="scroll-space" aria-label="La nostra storia"></main>
+
+    <!-- Invito a scorrere (scena 1) -->
+    <div id="scroll-hint" class="hint">
+      <span>scorri giù</span>
+      <span class="hint-arrow">↓</span>
+    </div>
+
+    <!-- Interfaccia dell'album (scena 4) -->
+    <div id="album-hit" aria-hidden="true"></div>
+    <div id="album-ui" aria-live="polite">
+      <div id="album-hint" class="album-hint"></div>
+      <div id="page-counter" class="page-counter"></div>
+    </div>
+
+    <!-- Messaggio gentile se le foto non arrivano -->
+    <div id="photo-error" class="photo-error" role="alert" hidden>
+      <p>Le foto si stanno facendo desiderare…</p>
+      <p class="small">Controlla la connessione e riprova tra un attimo.</p>
+      <button type="button" id="photo-retry">Riprova</button>
+    </div>
+
+    <!-- Frasi finali (scena 5) -->
+    <section id="phrases" aria-live="polite">
+      <p class="phrase">Ovunque il destino ci porti…</p>
+      <p class="phrase">…quale sarà la nostra prossima destinazione?</p>
+      <p class="phrase phrase-love">Ti amo <span class="heart">❤️</span></p>
+      <p class="phrase">Ad altri milioni di mesi così.</p>
+    </section>
+    <button type="button" id="restart" class="restart">Ricomincia</button>
+
+    <!-- Musica (visibile solo se esiste public/musica.mp3) -->
+    <button type="button" id="music" class="music" aria-label="Attiva la musica" hidden>🔈</button>
+
+    <!-- Dissolvenza a nero (usata da "Ricomincia") -->
+    <div id="fade" aria-hidden="true"></div>
+
+    <!-- Schermata di caricamento -->
+    <div id="loader">
+      <div class="loader-inner">
+        <svg class="loader-heart" viewBox="0 0 100 92" aria-hidden="true">
+          <defs>
+            <clipPath id="heart-clip">
+              <path d="M50 88C50 88 6 60 6 30C6 15 17 5 30 5C39 5 46 10 50 17C54 10 61 5 70 5C83 5 94 15 94 30C94 60 50 88 50 88Z" />
+            </clipPath>
+            <linearGradient id="heart-grad" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0" stop-color="#ff5f8f" />
+              <stop offset="1" stop-color="#ffc9a3" />
+            </linearGradient>
+          </defs>
+          <path class="heart-outline" d="M50 88C50 88 6 60 6 30C6 15 17 5 30 5C39 5 46 10 50 17C54 10 61 5 70 5C83 5 94 15 94 30C94 60 50 88 50 88Z" />
+          <g clip-path="url(#heart-clip)">
+            <rect id="heart-fill" x="0" y="92" width="100" height="92" fill="url(#heart-grad)" />
+          </g>
+        </svg>
+        <div id="loader-percent" class="loader-percent">0%</div>
+        <div class="loader-title">Giulia &amp; Davide</div>
+        <button type="button" id="enter" class="enter" hidden>Tocca per iniziare</button>
+      </div>
+    </div>
+
+    <noscript>Per vedere questa sorpresa serve JavaScript attivo 💛</noscript>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
