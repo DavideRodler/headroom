@@ -2,11 +2,12 @@
  * Punto d'ingresso: crea renderer e scena, carica le risorse (con la
  * schermata del cuore), collega i moduli e fa girare il loop di rendering.
  */
-import '@fontsource/great-vibes/400.css';
-import '@fontsource/allura/400.css';
-import '@fontsource/cormorant-garamond/400.css';
-import '@fontsource/cormorant-garamond/400-italic.css';
-import '@fontsource/inter/400.css';
+// solo l'alfabeto latino: basta per l'italiano e alleggerisce il sito
+import '@fontsource/great-vibes/latin-400.css';
+import '@fontsource/allura/latin-400.css';
+import '@fontsource/cormorant-garamond/latin-400.css';
+import '@fontsource/cormorant-garamond/latin-400-italic.css';
+import '@fontsource/inter/latin-400.css';
 import './styles.css';
 
 import * as THREE from 'three';

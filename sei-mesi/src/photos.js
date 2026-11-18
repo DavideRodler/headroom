@@ -5,6 +5,28 @@
  */
 import { fetchPhotoList } from './supabase.js';
 
+/**
+ * Elenco alternativo (facoltativo): se VITE_PHOTO_MANIFEST punta a un JSON
+ * pubblicato insieme al sito, le foto arrivano da lì invece che da Supabase.
+ * Serve per le anteprime ospitate dove le richieste esterne sono bloccate.
+ * Formato: [{ "name": "01_x.jpg", "file": "photos/01_x.jpg", "w": 1200, "h": 1600 }]
+ */
+async function fetchManifest(path) {
+  const url = new URL(`${import.meta.env.BASE_URL}${path}`, window.location.href);
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Elenco foto non trovato (${res.status})`);
+  const list = await res.json();
+  if (!Array.isArray(list) || !list.length) throw new Error('Elenco foto vuoto');
+  return list.map((p) => ({
+    name: p.name,
+    path: p.file,
+    url: new URL(p.file, url).href,
+    size: 0,
+    w: p.w,
+    h: p.h,
+  }));
+}
+
 const PROBE_BYTES = 131072; // 128 KB bastano per l'intestazione di un JPEG
 const BACKGROUND_CONCURRENCY = 3;
 
@@ -24,7 +46,8 @@ export class PhotoLibrary {
   async init(firstCount = 4) {
     const report = this.loader?.task('photos', 3) || (() => {});
     try {
-      this.items = await fetchPhotoList();
+      const manifest = import.meta.env.VITE_PHOTO_MANIFEST;
+      this.items = manifest ? await fetchManifest(manifest) : await fetchPhotoList();
       report(0.15);
 
       let probed = 0;
@@ -64,6 +87,11 @@ export class PhotoLibrary {
 
   /** Legge larghezza/altezza (e orientamento EXIF) dai primi byte del file. */
   async #probe(item) {
+    if (item.w > 0 && item.h > 0) {
+      // dimensioni già note (elenco con misure)
+      item.aspect = item.w / item.h;
+      return;
+    }
     item.w = 3;
     item.h = 4; // ripiego: verticale
     try {
